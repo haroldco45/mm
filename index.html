@@ -8,52 +8,58 @@
         body {
             background-color: #1a1a1a;
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             margin: 0;
+            text-align: center;
         }
         .gauge-container {
-            text-align: center;
-            border: 5px solid #ffcc00;
+            border: 8px solid #ffcc00;
             padding: 40px;
             border-radius: 50%;
-            width: 200px;
-            height: 200px;
+            width: 180px;
+            height: 180px;
             display: flex;
             flex-direction: column;
+            align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px #ffcc00;
+            box-shadow: 0 0 30px rgba(255, 204, 0, 0.4);
+            margin: 20px 0;
         }
-        #speed {
-            font-size: 60px;
-            font-weight: bold;
-            margin: 0;
-        }
-        .unit { font-size: 20px; color: #aaa; }
-        .controls { margin-top: 30px; }
+        #speed { font-size: 70px; font-weight: bold; margin: 0; transition: color 0.3s; }
+        .unit { font-size: 20px; color: #888; text-transform: uppercase; }
+        
+        .controls { display: grid; gap: 15px; grid-template-columns: 1fr 1fr; }
         button {
-            padding: 10px 20px;
-            font-size: 18px;
+            padding: 15px 25px;
+            font-size: 16px;
             cursor: pointer;
-            background: #ffcc00;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-weight: bold;
+            transition: transform 0.1s;
         }
+        button:active { transform: scale(0.95); }
+        .btn-test { grid-column: span 2; background: #007bff; color: white; }
+        .btn-accel { background: #28a745; color: white; }
+        .btn-brake { background: #dc3545; color: white; }
+
         footer {
-            margin-top: 50px;
-            font-size: 12px;
-            color: #555;
+            margin-top: 40px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
 
-    <h1>Simulador de Velocidad</h1>
+    <h2 style="color: #ffcc00;">VIBRAS POSITIVAS HM</h2>
+    <p>Simulador de Velocidad en Tiempo Real</p>
     
     <div class="gauge-container">
         <p id="speed">0</p>
@@ -61,11 +67,16 @@
     </div>
 
     <div class="controls">
-        <button onclick="acelerar()">ACELERAR</button>
-        <button onclick="frenar()" style="background:#555; color:white;">FRENAR</button>
+        <button class="btn-test" onclick="probarAudio()">🎵 PROBAR AUDIO MAURICIO</button>
+        
+        <button class="btn-accel" onclick="acelerar()">ACELERAR</button>
+        <button class="btn-brake" onclick="frenar()">FRENAR</button>
     </div>
 
-    <audio id="audioMauricio" src="Mauricio-al-tazon.m4a"></audio>
+    <audio id="audioMauricio">
+        <source src="Mauricio-al-tazon.m4a" type="audio/mp4">
+        Tu navegador no soporta el formato de audio.
+    </audio>
 
     <footer>
         App desarrollada por **Vibras Positivas HM** <br>
@@ -76,34 +87,41 @@
         let velocidad = 0;
         const speedDisplay = document.getElementById('speed');
         const audio = document.getElementById('audioMauricio');
-        let audioSonando = false;
+
+        // Función para el botón de prueba directa
+        function probarAudio() {
+            if (audio.paused) {
+                audio.play().catch(e => alert("Error: Haz clic en la pantalla primero para permitir el audio."));
+            } else {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        }
 
         function acelerar() {
-            if (velocidad < 120) {
-                velocidad += 10;
-                actualizarPantalla();
+            if (velocidad < 140) {
+                velocidad += 20;
+                actualizarEstado();
             }
         }
 
         function frenar() {
             if (velocidad > 0) {
-                velocidad -= 10;
-                actualizarPantalla();
+                velocidad -= 20;
+                actualizarEstado();
             }
         }
 
-        function actualizarPantalla() {
+        function actualizarEstado() {
             speedDisplay.innerText = velocidad;
 
-            // Si la velocidad supera los 80 km/h, suena Mauricio
-            if (velocidad >= 80 && !audioSonando) {
+            // Lógica automática: suena a más de 80 km/h
+            if (velocidad >= 80) {
                 audio.play();
-                audioSonando = true;
                 speedDisplay.style.color = "#ffcc00";
-            } else if (velocidad < 80) {
+            } else {
                 audio.pause();
-                audio.currentTime = 0; // Reinicia el audio
-                audioSonando = false;
+                audio.currentTime = 0;
                 speedDisplay.style.color = "white";
             }
         }
